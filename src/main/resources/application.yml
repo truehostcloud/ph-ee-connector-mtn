@@ -13,3 +13,17 @@ zeebe:
     evenly-allocated-max-jobs: "#{${zeebe.client.max-execution-threads} / ${zeebe.client.number-of-workers}}"
   broker:
     contactpoint: "localhost:26500"
+
+mtnrw:
+  auth-host: "https://sandbox.momodeveloper.mtn.com"
+  client-key: "e63adfb1-6826-4f8a-8257-81097b9c2009"
+  client-secret: "374a59ee44fa4784b67448894c0e9b39"
+  api-host: "https://sandbox.momodeveloper.mtn.com"
+  environment: "sandbox"
+  subscriptionKey: "d42413792e984d40b516a697474933f3"
+  callBack: "http://helloyou.requestcatcher.com"
+
+mtn:
+  api:
+    timeout: 60000
+  max-retry-count: 2
