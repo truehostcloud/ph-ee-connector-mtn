@@ -20,17 +20,21 @@ import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_ID;
 @Component
 public class MtnWorker {
-    @Autowired
     private ZeebeClient zeebeClient;
-    @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
     private MtnUtils mtnUtils;
-    @Autowired
     private CamelContext camelContext;
-    @Autowired
     private ProducerTemplate producerTemplate;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger;
+
+    private MtnWorker(ZeebeClient zeebeClient, ObjectMapper objectMapper, MtnUtils mtnUtils, CamelContext camelContext, ProducerTemplate producerTemplate) {
+        this.zeebeClient = zeebeClient;
+        this.objectMapper = objectMapper;
+        this.mtnUtils = mtnUtils;
+        this.camelContext = camelContext;
+        this.producerTemplate = producerTemplate;
+        this.logger = LoggerFactory.getLogger(this.getClass());
+    }
 
     @PostConstruct
     public void setupWorkers() {
