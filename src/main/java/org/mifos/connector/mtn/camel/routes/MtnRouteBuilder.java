@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.json.JSONObject;
 import org.mifos.connector.mtn.Utility.ConnectionUtils;
 import org.mifos.connector.mtn.Utility.MtnProps;
 import org.mifos.connector.mtn.dto.MtnCallback;
@@ -33,6 +34,8 @@ public class MtnRouteBuilder extends RouteBuilder {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ObjectMapper objectMapper;
     private CollectionResponseProcessor collectionResponseProcessor;
+    @Value("${mtn.max-retry-count}")
+    private Integer maxRetryCount;
 
     public MtnRouteBuilder(AccessTokenStore accessTokenStore, TransactionResponseProcessor transactionResponseProcessor,MtnProps mtnRwProp, MtnGenericProcessor mtnGenericProcessor, ObjectMapper objectMapper, CollectionResponseProcessor collectionResponseProcessor) {
         this.accessTokenStore = accessTokenStore;
@@ -134,6 +137,79 @@ public class MtnRouteBuilder extends RouteBuilder {
                     }
                 })
                 .log(LoggingLevel.INFO, "After Handling callback body")
+                .process(collectionResponseProcessor);
+
+        /*
+         * Starts the payment flow
+         *
+         * Step1: Authenticate the user by initiating [get-access-token] flow
+         * Step2: On successful [Step1], directs to [mtn-buy-goods] flow
+         */
+        from("direct:mtn-get-transaction-status-base")
+                .id("mtn-buy-goods-get-transaction-status-base")
+                .log(LoggingLevel.INFO, "Starting buy goods transaction status flow")
+                .choice()
+                .when(exchangeProperty(SERVER_TRANSACTION_STATUS_RETRY_COUNT).isLessThanOrEqualTo(maxRetryCount))
+                .to("direct:get-access-token")
+                .process(exchange -> exchange.setProperty(ACCESS_TOKEN, accessTokenStore.getAccessToken()))
+                .log(LoggingLevel.INFO, "Got access token, moving on to API call.")
+                .to("direct:mtn-transaction-status")
+                .log(LoggingLevel.INFO, "Status: ${header.CamelHttpResponseCode}")
+                .log(LoggingLevel.INFO, "Transaction API response: ${body}")
+                .to("direct:mtn-transaction-status-response-handler")
+                .otherwise()
+                .process(exchange -> {
+                    exchange.setProperty(IS_RETRY_EXCEEDED, true);
+                    exchange.setProperty(TRANSACTION_FAILED, true);
+                })
+                .process(collectionResponseProcessor);
+
+        /*
+         * Takes the request for transaction status and forwards in to the mtn transaction status endpoint
+         */
+        from("direct:mtn-transaction-status")
+                .removeHeader("*")
+                .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+                .setHeader("Content-Type", constant("application/json"))
+                .setHeader("Ocp-Apim-Subscription-Key", constant(mtnProps.getSubscriptionKey()))
+                .setHeader("X-Callback-Url", constant(mtnProps.getCallBack()))
+                .setHeader("X-Reference-Id", simple( "${exchangeProperty."+CORRELATION_ID+"}"))
+                .setHeader("X-Target-Environment", constant(mtnProps.getEnvironment()))
+                .setHeader("Authorization", simple("Bearer ${exchangeProperty."+ACCESS_TOKEN+"}"))
+                .marshal().json(JsonLibrary.Jackson)
+                .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay/" + "${exchangeProperty."+TRANSACTION_ID+"}" + "?bridgeEndpoint=true&throwExceptionOnFailure=false&"+
+                        ConnectionUtils.getConnectionTimeoutDsl(mtnTimeout))
+                .log(LoggingLevel.INFO, "MTN-RW STATUS called, response: \n\n ${body}");
+
+        /*
+         * Route to handle async transaction status API responses
+         */
+        from("direct:mtn-transaction-status-response-handler")
+                .id("mtn-transaction-status-response-handler")
+                .log(LoggingLevel.INFO, "## Starting MTN transaction status handler route")
+                .choice()
+                .when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo("200"))
+                .log(LoggingLevel.INFO, "Transaction status request successful")
+                .process (exchange -> {
+                    String body = exchange.getIn().getBody(String.class);
+                    JSONObject jsonObject = new JSONObject(body);
+                    exchange.setProperty(LAST_RESPONSE_BODY, body);
+                    if(jsonObject.getString("status").equals("SUCCESSFUL")) {
+                        exchange.setProperty(TRANSACTION_FAILED, false);
+                    }
+                    else {
+                        exchange.setProperty(TRANSACTION_FAILED, true);
+                    }
+                })
+                .process(collectionResponseProcessor)
+                .otherwise()
+                .log(LoggingLevel.ERROR, "Transaction status request unsuccessful")
+                .process(exchange -> {
+                    Object correlationId = exchange.getProperty(CORRELATION_ID);
+                    exchange.setProperty(TRANSACTION_ID, correlationId);
+                })
+                .setProperty(TRANSACTION_FAILED, constant(true))
+                .setProperty(IS_TRANSACTION_PENDING, constant(true))
                 .process(collectionResponseProcessor);
     }
 }
