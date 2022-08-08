@@ -17,11 +17,11 @@ zeebe:
 
 mtnrw:
   auth-host: "https://sandbox.momodeveloper.mtn.com"
-  client-key: "e63adfb1-6826-4f8a-8257-81097b9c2009"
-  client-secret: "374a59ee44fa4784b67448894c0e9b39"
+  client-key: "xxxxxxxxxxxxxxxxxx"
+  client-secret: "xxxxxxxxxxxxx"
   api-host: "https://sandbox.momodeveloper.mtn.com"
   environment: "sandbox"
-  subscriptionKey: "d42413792e984d40b516a697474933f3"
+  subscriptionKey: "xxxxxxxxxxxxxxxxx"
   callBack: "http://helloyou.requestcatcher.com"
 
 mtn:
