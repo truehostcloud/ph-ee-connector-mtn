@@ -39,3 +39,6 @@ out/
 
 ### macOs files
 .DS_Store
+
+.report/
+.lint
