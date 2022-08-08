@@ -18,6 +18,7 @@ import java.util.Map;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.*;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.MTN_API_RESPONSE;
 @Component
 public class MtnWorker {
     private ZeebeClient zeebeClient;
@@ -53,6 +54,7 @@ public class MtnWorker {
                     exchange.setProperty(CORRELATION_ID, transactionId);
                     exchange.setProperty(DEPLOYED_PROCESS, job.getBpmnProcessId());
                     producerTemplate.send("direct:request-to-pay-base", exchange);
+                    variables.put(MTN_API_RESPONSE, exchange.getProperty(MTN_API_RESPONSE));
                     boolean isTransactionFailed = exchange.getProperty(TRANSACTION_FAILED, boolean.class);
                     if (isTransactionFailed) {
                         variables.put(TRANSACTION_FAILED, true);

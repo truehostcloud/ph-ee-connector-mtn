@@ -198,7 +198,7 @@ public class MtnRouteBuilder extends RouteBuilder {
                         exchange.setProperty(TRANSACTION_FAILED, false);
                     }
                     else {
-                        exchange.setProperty(TRANSACTION_FAILED, true);
+                        exchange.setProperty(IS_TRANSACTION_PENDING, true);
                     }
                 })
                 .process(collectionResponseProcessor)
@@ -209,7 +209,6 @@ public class MtnRouteBuilder extends RouteBuilder {
                     exchange.setProperty(TRANSACTION_ID, correlationId);
                 })
                 .setProperty(TRANSACTION_FAILED, constant(true))
-                .setProperty(IS_TRANSACTION_PENDING, constant(true))
                 .process(collectionResponseProcessor);
     }
 }
