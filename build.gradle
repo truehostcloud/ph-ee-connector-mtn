@@ -11,7 +11,7 @@ repositories {
 	mavenCentral()
 	maven {
 		url = uri('https://fynarfin.jfrog.io/artifactory/fyn-libs-snapshot/')
-	}
+ }
 }
 
 dependencies {
