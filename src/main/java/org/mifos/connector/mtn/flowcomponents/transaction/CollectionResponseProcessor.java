@@ -76,9 +76,14 @@ public class CollectionResponseProcessor implements Processor {
                     .join();
             return;
         }
-        String clientCorrelationId = exchange.getProperty(TRANSACTION_ID, String.class);
-        logger.info("Received correlation ID  "+ clientCorrelationId );
-        variables.put(TRANSACTION_ID, clientCorrelationId);
+        String transactionId = exchange.getProperty(TRANSACTION_ID, String.class);
+        logger.info("Received transaction ID  "+ transactionId );
+        if(transactionId != null) {
+            variables.put(TRANSACTION_ID, transactionId);
+        }
+        String correlationId = exchange.getProperty(CORRELATION_ID, String.class);
+        logger.info("Received CORRELATION ID  "+ correlationId );
+        variables.put(CORRELATION_ID, correlationId);
         variables.put(TRANSACTION_FAILED,  exchange.getProperty(TRANSACTION_FAILED, Boolean.class));
 
 
@@ -87,7 +92,7 @@ public class CollectionResponseProcessor implements Processor {
         logger.info("Publishing transaction message variables: " + variables);
         zeebeClient.newPublishMessageCommand()
                 .messageName(TRANSFER_MESSAGE)
-                .correlationKey(clientCorrelationId)
+                .correlationKey(correlationId)
                 .timeToLive(Duration.ofMillis(timeToLive))
                 .variables(variables)
                 .send()

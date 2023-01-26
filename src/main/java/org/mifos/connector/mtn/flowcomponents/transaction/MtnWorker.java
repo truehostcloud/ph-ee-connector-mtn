@@ -11,10 +11,11 @@ import org.mifos.connector.mtn.Utility.MtnUtils;
 import org.mifos.connector.mtn.dto.PaymentRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.UUID;
+
 import static org.mifos.connector.mtn.camel.config.CamelProperties.*;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_ID;
@@ -41,7 +42,7 @@ public class MtnWorker {
     public void setupWorkers() {
 
         zeebeClient.newWorker()
-                .jobType("init-transfer")
+                .jobType("init-momo-transfer")
                 .handler((client, job) -> {
                     logger.info("Job '{}' started from process '{}' with key {}", job.getType(), job.getBpmnProcessId(), job.getKey());
                     Map<String, Object> variables = job.getVariablesAsMap();
@@ -51,8 +52,10 @@ public class MtnWorker {
                     PaymentRequestDTO paymentRequestDTO = mtnUtils.channelRequestConvertor(channelRequest, transactionId);
                     Exchange exchange = new DefaultExchange(camelContext);
                     exchange.setProperty(BUY_GOODS_REQUEST_BODY, paymentRequestDTO);
-                    exchange.setProperty(CORRELATION_ID, transactionId);
+                    exchange.setProperty(CORRELATION_ID, UUID.randomUUID());
                     exchange.setProperty(DEPLOYED_PROCESS, job.getBpmnProcessId());
+                    variables.put(CORRELATION_ID, exchange.getProperty(CORRELATION_ID));
+                    logger.info("CorrelationID: '{}'!",exchange.getProperty(CORRELATION_ID));
                     producerTemplate.send("direct:request-to-pay-base", exchange);
                     variables.put(MTN_API_RESPONSE, exchange.getProperty(MTN_API_RESPONSE));
                     boolean isTransactionFailed = exchange.getProperty(TRANSACTION_FAILED, boolean.class);
@@ -66,7 +69,7 @@ public class MtnWorker {
                             .send()
                             .join();
                 })
-                .name("init-transfer")
+                .name("init-momo-transfer")
                 .maxJobsActive(100)
                 .open();
     }
