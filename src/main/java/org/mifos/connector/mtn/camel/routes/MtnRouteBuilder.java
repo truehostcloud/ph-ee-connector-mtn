@@ -86,24 +86,22 @@ public class MtnRouteBuilder extends RouteBuilder {
                 .marshal().json(JsonLibrary.Jackson)
                 .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay" +"?bridgeEndpoint=true&throwExceptionOnFailure=false&"+
                         ConnectionUtils.getConnectionTimeoutDsl(mtnTimeout))
+                .log(LoggingLevel.INFO, "MTN-RW Request to pay called, response: \n\n ${body}")
                 .process(mtnGenericProcessor);
-
         from("direct:mtn-transaction-response-handler")
                 .id("mtn-transaction-response-handler")
                 .choice()
                 .when(header(Exchange.HTTP_RESPONSE_CODE).isEqualTo("202"))
                 .log(LoggingLevel.INFO, "MTN Collection request successful")
-                .process(exchange -> {
-                    exchange.setProperty(TRANSACTION_ID, exchange.getProperty(CORRELATION_ID));
-                    // TODO: Deal with server ID
-                })
                 .process(transactionResponseProcessor)
                 .otherwise()
                 .log(LoggingLevel.ERROR, "MTN Collection request unsuccessful")
                 .process(exchange -> {
-                    Object correlationId = exchange.getProperty(CORRELATION_ID);
-                    exchange.setProperty(TRANSACTION_ID, correlationId);
+                    logger.error("Body: " + exchange.getIn().getBody(String.class));
+                    logger.error("Header: " + exchange.getIn().getHeaders().toString());
+                    // TODO: Deal with server ID
                 })
+                .log(LoggingLevel.ERROR, Exchange.HTTP_RESPONSE_TEXT)
                 .setProperty(TRANSACTION_FAILED, constant(true))
                 .process(transactionResponseProcessor);
 
@@ -123,7 +121,7 @@ public class MtnRouteBuilder extends RouteBuilder {
                     String body = exchange.getIn().getBody(String.class);
                     MtnCallback callback = objectMapper.readValue(
                             body, MtnCallback.class);
-                    exchange.setProperty(TRANSACTION_ID, callback.getExternalId());
+                    exchange.setProperty(CORRELATION_ID, callback.getExternalId());
                     // TODO: SAVE SERVER ID ?
                     logger.info("\n\n MTN Callback " + callback + "\n");
                     logger.info("\n\n Correlation Key " + callback.getExternalId());
@@ -172,12 +170,12 @@ public class MtnRouteBuilder extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader("Content-Type", constant("application/json"))
                 .setHeader("Ocp-Apim-Subscription-Key", constant(mtnProps.getSubscriptionKey()))
-                .setHeader("X-Callback-Url", constant(mtnProps.getCallBack()))
                 .setHeader("X-Reference-Id", simple( "${exchangeProperty."+CORRELATION_ID+"}"))
                 .setHeader("X-Target-Environment", constant(mtnProps.getEnvironment()))
                 .setHeader("Authorization", simple("Bearer ${exchangeProperty."+ACCESS_TOKEN+"}"))
                 .marshal().json(JsonLibrary.Jackson)
-                .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay/" + "${exchangeProperty."+TRANSACTION_ID+"}" + "?bridgeEndpoint=true&throwExceptionOnFailure=false&"+
+                .log(LoggingLevel.INFO,"${exchangeProperty."+CORRELATION_ID+"}")
+                .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay/" + "${exchangeProperty."+CORRELATION_ID+"}" + "?bridgeEndpoint=true&throwExceptionOnFailure=false&"+
                         ConnectionUtils.getConnectionTimeoutDsl(mtnTimeout))
                 .log(LoggingLevel.INFO, "MTN-RW STATUS called, response: \n\n ${body}");
 
@@ -205,8 +203,8 @@ public class MtnRouteBuilder extends RouteBuilder {
                 .otherwise()
                 .log(LoggingLevel.ERROR, "Transaction status request unsuccessful")
                 .process(exchange -> {
-                    Object correlationId = exchange.getProperty(CORRELATION_ID);
-                    exchange.setProperty(TRANSACTION_ID, correlationId);
+                    logger.error("Body:"+ exchange.getIn().getBody(String.class));
+                    logger.error("Header:"+ exchange.getIn().getHeaders().toString());
                 })
                 .setProperty(TRANSACTION_FAILED, constant(true))
                 .process(collectionResponseProcessor);
