@@ -1,0 +1,30 @@
+camel:
+  server-port: 5098
+  springboot:
+    main-run-controller: true
+  dataformat:
+    json-jackson:
+      auto-discover-object-mapper: true
+
+zeebe:
+  client:
+    max-execution-threads: 100
+    number-of-workers: 5
+    evenly-allocated-max-jobs: "#{${zeebe.client.max-execution-threads} / ${zeebe.client.number-of-workers}}"
+    ttl: 30000
+  broker:
+    contactpoint: "localhost:26500"
+
+mtnrw:
+  auth-host: "https://sandbox.momodeveloper.mtn.com"
+  client-key: "xxxxxxxxxxxxxxxxxx"
+  client-secret: "xxxxxxxxxxxxx"
+  api-host: "https://sandbox.momodeveloper.mtn.com"
+  environment: "sandbox"
+  subscriptionKey: "xxxxxxxxxxxxxxxxx"
+  callBack: "http://helloyou.requestcatcher.com"
+
+mtn:
+  api:
+    timeout: 60000
+  max-retry-count: 2
