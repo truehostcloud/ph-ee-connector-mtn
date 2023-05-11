@@ -1,4 +1,4 @@
-git pu# MTN-RW Connector
+# ph-ee-connector-mtn
 
 This connector incorporates job worker implementations responsible for polling available jobs in Zeebe and communicating with MTN Rwanda's endpoint.
 It currently facilitates the initiation of payment (RequesttoPay) and receipt of payment confirmations through MTN-Rwanda endpoints.
