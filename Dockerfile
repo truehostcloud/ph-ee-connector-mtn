@@ -1,14 +1,13 @@
 
-FROM openjdk:11 AS build
+FROM openjdk:17-jdk-slim AS build
 
 
-RUN apt-get update -qq && apt-get install -y wget
 COPY  . ph-ee-connector-mtn
 
 WORKDIR /ph-ee-connector-mtn
 RUN ./gradlew clean build
 
-FROM openjdk:11
+FROM openjdk:17-jdk-slim
 
 EXPOSE 5000
 
