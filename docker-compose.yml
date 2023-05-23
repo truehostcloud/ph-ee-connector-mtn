@@ -1,0 +1,74 @@
+***REMOVED***
+
+***REMOVED***
+  zeebe:
+    image: camunda/zeebe:8.1.6
+***REMOVED***
+      ZEEBE_LOG_LEVEL: debug
+***REMOVED***
+      - "26500:26500"
+      - "9600:9600"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9600/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+
+  zeebe_ops:
+    image: oaftech.azurecr.io/phee-ns/phee-zeebe-ops:v1.0.1
+***REMOVED***
+      - "5001:5000"
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+  roster-connector:
+    image: oaftech.azurecr.io/phee-ns/ph-ee-connector-ams-pesa:v1.2.1
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+      AMS_LOCAL_TIMEOUT: 60000
+      PESACORE_BASE-URL: https://qaoperations01.oneacrefund.org
+      PESACORE_AUTH-HEADER: PaymentHubTest
+      PESACORE_ENDPOINT_VERIFICATION: /api/paymentHub/Verification
+      PESACORE_ENDPOINT_CONFIRMATION: /api/paymentHub/Confirmation
+***REMOVED***
+***REMOVED***
+***REMOVED***
+
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+***REMOVED***
+    build:
+      context: .
+      dockerfile: Dockerfile
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
