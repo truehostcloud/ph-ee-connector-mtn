@@ -82,9 +82,12 @@ public class CollectionResponseProcessor implements Processor {
             variables.put(TRANSACTION_ID, transactionId);
         }
         String correlationId = exchange.getProperty(CORRELATION_ID, String.class);
+        String financialTransactionId = exchange.getProperty(FINANCIAL_TRANSACTION_ID, String.class);
         logger.info("Received CORRELATION ID  "+ correlationId );
         variables.put(CORRELATION_ID, correlationId);
+        variables.put(EXTERNAL_ID, financialTransactionId);
         variables.put(TRANSACTION_FAILED,  exchange.getProperty(TRANSACTION_FAILED, Boolean.class));
+        logger.info("Received financial transaction ID  "+ variables.get(FINANCIAL_TRANSACTION_ID) );
 
 
         //TODO:Handle failed transactions with error code
