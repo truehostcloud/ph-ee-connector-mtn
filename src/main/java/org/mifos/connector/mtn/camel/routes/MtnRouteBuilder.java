@@ -129,6 +129,7 @@ public class MtnRouteBuilder extends RouteBuilder {
                         exchange.setProperty(TRANSACTION_FAILED, false);
                         exchange.setProperty(CALLBACK_RECEIVED, true);
                         exchange.setProperty(CALLBACK, callback.toString());
+                        exchange.setProperty(FINANCIAL_TRANSACTION_ID, callback.getFinancialTransactionId());
                     } else {
                         exchange.setProperty(TRANSACTION_FAILED, true);
                         // TODO: SAVE ERROR CODE AND INFO
@@ -192,6 +193,7 @@ public class MtnRouteBuilder extends RouteBuilder {
                     String body = exchange.getIn().getBody(String.class);
                     JSONObject jsonObject = new JSONObject(body);
                     exchange.setProperty(LAST_RESPONSE_BODY, body);
+                    exchange.setProperty(FINANCIAL_TRANSACTION_ID, jsonObject.getString(FINANCIAL_TRANSACTION_ID));
                     if(jsonObject.getString("status").equals("SUCCESSFUL")) {
                         exchange.setProperty(TRANSACTION_FAILED, false);
                     }
