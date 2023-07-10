@@ -10,6 +10,10 @@ pr:
 pool:
   vmImage: "ubuntu-latest"
 
+variables:
+  # Exposes GITGUARDIAN_API_KEY and GITHUB_TOKEN
+  - group: CodeScanningTools
+
 steps:
   - script: |
       VERSION_TAG=`git describe --abbrev=0 --tags`
@@ -22,9 +26,53 @@ steps:
     displayName: Get git tag
 
   - script: |
-      docker run -v "$(System.DefaultWorkingDirectory):/tmp/lint" --workdir /tmp/lint -e GIT_AUTHORIZATION_BEARER=$(System.AccessToken) megalinter/megalinter
+      docker run \
+        -v $(pwd):/data \
+        --env-file <(env | grep -e SYSTEM_ -e BUILD_ -e TF_ -e AGENT_) \
+        -e CI=true \
+        -e GITGUARDIAN_API_KEY \
+        gitguardian/ggshield:latest ggshield secret scan ci
+      condition: succeededOrFailed()
+      displayName: GitGuardian Scan
+      env:
+      GITGUARDIAN_API_KEY: $(GITGUARDIAN_API_KEY)
+
+  - script: |
+      # Determine linting scope
+      if [[ "${BUILD_REASON}" == "PullRequest" ]]; then
+        echo "This is a PR build, scanning delta only"
+        export VALIDATE_ALL_CODEBASE=false
+        export GITHUB_SHA=$(git log -1 --pretty=%B | sed -e 's/^Merge //' -e 's/ into.*//')
+      else
+        echo "This is a regular build"
+        export VALIDATE_ALL_CODEBASE=true
+        export GITHUB_SHA=${BUILD_SOURCEVERSION}
+      fi
+      echo "VALIDATE_ALL_CODEBASE=${VALIDATE_ALL_CODEBASE}"
+      echo "GITHUB_SHA=${GITHUB_SHA}"
+      
+      docker run -v "$(System.DefaultWorkingDirectory):/tmp/lint" \
+        -e GITHUB_TOKEN \
+        -e VALIDATE_ALL_CODEBASE \
+        -e APPLY_FIXES=none \
+        -e GITHUB_STATUS_REPORTER=true \
+        -e GITHUB_COMMENT_REPORTER=true \
+        -e CI=true \
+        -e GITHUB_REF="$(Build.SourceBranch)" \
+        -e GITHUB_REPOSITORY="$(Build.Repository.ID)" \
+        -e GITHUB_TARGET_URL="$(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=logs&j=$(System.JobId)&t=$(System.TaskInstanceId)" \
+        -e GITHUB_SHA \
+        oxsecurity/megalinter-cupcake:latest
     displayName: MegaLinter analysis
-    continueOnError: true
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
+
+  - task: PublishPipelineArtifact@1
+    condition: succeededOrFailed()
+    displayName: Publish MegaLinter reports
+    inputs:
+      targetPath: "$(System.DefaultWorkingDirectory)/megalinter-reports/"
+      artifactName: MegaLinterReport
 
   - task: Docker@2
     displayName: Login to Azure registry
