@@ -15,6 +15,10 @@ variables:
   - group: CodeScanningTools
 
 steps:
+  - checkout: self
+    # This is required to allow MegaLinter to run git commands
+    persistCredentials: true
+
   - script: |
       VERSION_TAG=`git describe --abbrev=0 --tags`
       echo "##vso[task.setvariable variable=VERSION_TAG]$VERSION_TAG"
@@ -32,9 +36,9 @@ steps:
         -e CI=true \
         -e GITGUARDIAN_API_KEY \
         gitguardian/ggshield:latest ggshield secret scan ci
-      condition: succeededOrFailed()
-      displayName: GitGuardian Scan
-      env:
+    condition: succeededOrFailed()
+    displayName: GitGuardian Scan
+    env:
       GITGUARDIAN_API_KEY: $(GITGUARDIAN_API_KEY)
 
   - script: |
