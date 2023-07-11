@@ -1,6 +1,10 @@
 package org.mifos.connector.mtn.zeebe;
 
+/**
+ * Holds variables to be used by Zeebe
+ */
 public class ZeebeVariables {
+
     public static final String TRANSACTION_ID = "transactionId";
     public static final String TRANSACTION_FAILED = "transactionFailed";
     public static final String CALLBACK_RECEIVED = "isCallbackReceived";

@@ -1,11 +1,11 @@
 package org.mifos.connector.mtn.auth;
 
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AccessTokenStore {
+
     public String accessToken;
     public LocalDateTime expiresOn;
 

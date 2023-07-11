@@ -54,7 +54,7 @@ steps:
       fi
       echo "VALIDATE_ALL_CODEBASE=${VALIDATE_ALL_CODEBASE}"
       echo "GITHUB_SHA=${GITHUB_SHA}"
-      
+
       docker run -v "$(System.DefaultWorkingDirectory):/tmp/lint" \
         -e GITHUB_TOKEN \
         -e VALIDATE_ALL_CODEBASE \

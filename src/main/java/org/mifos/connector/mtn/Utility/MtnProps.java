@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "mtnrw")
 @Data
 public class MtnProps {
+
     private String authHost;
     private String clientKey;
     private String clientSecret;

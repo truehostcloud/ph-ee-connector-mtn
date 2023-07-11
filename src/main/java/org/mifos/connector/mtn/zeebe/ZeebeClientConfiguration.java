@@ -14,14 +14,9 @@ public class ZeebeClientConfiguration {
     @Value("${zeebe.client.max-execution-threads}")
     private int zeebeClientMaxThreads;
 
-
     @Bean
     public ZeebeClient setup() {
-        return ZeebeClient.newClientBuilder()
-                .gatewayAddress(zeebeBrokerContactpoint)
-                .usePlaintext()
-                .numJobWorkerExecutionThreads(zeebeClientMaxThreads)
-                .build();
+        return ZeebeClient.newClientBuilder().gatewayAddress(zeebeBrokerContactpoint).usePlaintext()
+                .numJobWorkerExecutionThreads(zeebeClientMaxThreads).build();
     }
 }
-
