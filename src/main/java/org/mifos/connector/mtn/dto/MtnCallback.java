@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class MtnCallback {
+
     @JsonProperty("financialTransactionId")
     private String financialTransactionId;
     @JsonProperty("externalId")

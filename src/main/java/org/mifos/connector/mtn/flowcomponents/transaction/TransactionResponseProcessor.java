@@ -1,9 +1,10 @@
 package org.mifos.connector.mtn.flowcomponents.transaction;
+
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
-
-import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 
 @Component
 public class TransactionResponseProcessor implements Processor {
@@ -13,9 +14,9 @@ public class TransactionResponseProcessor implements Processor {
 
         Object hasTransferFailed = exchange.getProperty(TRANSACTION_FAILED);
 
-        if (hasTransferFailed != null && (boolean)hasTransferFailed) {
+        if (hasTransferFailed != null && (boolean) hasTransferFailed) {
             exchange.setProperty(TRANSACTION_FAILED, true);
-            //TODO: SAVE ERROR CODE
+            // TODO: SAVE ERROR CODE
         } else {
             exchange.setProperty(TRANSACTION_FAILED, false);
             // TODO: SERVER ID SAVING

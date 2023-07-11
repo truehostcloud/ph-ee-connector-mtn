@@ -42,7 +42,7 @@ the `docker-compose.yml` file. The following components are included:
 - Channel-connector: Provides APIs for initiating collection requests
 - Roster-connector: Acts as Account management system(CLIF) - any other ams connector can be used
 
-A lot more services can be added to the above based on your needs, but to run the mtn-rw 
+A lot more services can be added to the above based on your needs, but to run the mtn-rw
 connector locally,
 the ones listed above are the required minimum.
 Please note that the `docker-compose.yml` file in this repository should NOT be used in a production
