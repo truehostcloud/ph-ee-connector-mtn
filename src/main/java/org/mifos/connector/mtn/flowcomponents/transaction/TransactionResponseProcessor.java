@@ -6,6 +6,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Process transaction responses.
+ */
 @Component
 public class TransactionResponseProcessor implements Processor {
 

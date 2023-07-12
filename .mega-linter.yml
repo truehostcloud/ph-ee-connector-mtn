@@ -12,3 +12,5 @@ PRINT_ALPACA: false
 
 # Linter-specific config
 GROOVY_NPM_GROOVY_LINT_ARGUMENTS: --failon error
+JAVA_CHECKSTYLE_CONFIG_FILE: checkstyle.xml
+JAVA_CHECKSTYLE_RULES_PATH: config/checkstyle

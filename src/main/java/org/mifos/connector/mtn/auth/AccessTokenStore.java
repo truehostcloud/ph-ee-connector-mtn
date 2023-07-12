@@ -3,6 +3,9 @@ package org.mifos.connector.mtn.auth;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class that holds the access token.
+ */
 @Component
 public class AccessTokenStore {
 
@@ -26,14 +29,22 @@ public class AccessTokenStore {
         return expiresOn;
     }
 
-    public void setExpiresOn(int expires_in) {
-        this.expiresOn = LocalDateTime.now().plusSeconds(expires_in);
+    public void setExpiresOn(int expiresIn) {
+        this.expiresOn = LocalDateTime.now().plusSeconds(expiresIn);
     }
 
+    /**
+     * Checks if the token is still valid.
+     *
+     * @param dateTime
+     *            the date to check time against
+     * @return boolean
+     */
     public boolean isValid(LocalDateTime dateTime) {
-        if (dateTime.isBefore(expiresOn))
+        if (dateTime.isBefore(expiresOn)) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 }
