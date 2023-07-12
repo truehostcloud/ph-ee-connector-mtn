@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'com.diffplug.spotless' version '6.18.0' apply false
+    id 'com.diffplug.spotless' version '6.19.0' apply false
 }
 
 group = 'org.mifos.connector'
@@ -56,7 +56,7 @@ allprojects {
             trimTrailingWhitespace()
         }
         java {
-            targetExclude '**/build/**', '**/bin/**', '**/out/**'
+            targetExclude '**/build/**', '**/bin/**', '**/out/**', '**/megalinter-reports/**'
             importOrder() //sort imports alphabetically
             removeUnusedImports()
             eclipse().configFile "$rootDir/config/dev-formatter.xml"

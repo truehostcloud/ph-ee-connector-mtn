@@ -1,7 +1,16 @@
 package org.mifos.connector.mtn.camel.routes;
 
-import static org.mifos.connector.mtn.camel.config.CamelProperties.*;
-import static org.mifos.connector.mtn.zeebe.ZeebeVariables.*;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ACCESS_TOKEN;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.BUY_GOODS_REQUEST_BODY;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_RETRY_EXCEEDED;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_TRANSACTION_PENDING;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.LAST_RESPONSE_BODY;
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.CALLBACK;
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.CALLBACK_RECEIVED;
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.FINANCIAL_TRANSACTION_ID;
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.SERVER_TRANSACTION_STATUS_RETRY_COUNT;
+import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Exchange;
@@ -9,19 +18,22 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.json.JSONObject;
-import org.mifos.connector.mtn.Utility.ConnectionUtils;
-import org.mifos.connector.mtn.Utility.MtnProps;
 import org.mifos.connector.mtn.auth.AccessTokenStore;
 import org.mifos.connector.mtn.dto.MtnCallback;
-import org.mifos.connector.mtn.dto.PaymentRequestDTO;
+import org.mifos.connector.mtn.dto.PaymentRequestDto;
 import org.mifos.connector.mtn.flowcomponents.mtn.MtnGenericProcessor;
 import org.mifos.connector.mtn.flowcomponents.transaction.CollectionResponseProcessor;
 import org.mifos.connector.mtn.flowcomponents.transaction.TransactionResponseProcessor;
+import org.mifos.connector.mtn.utility.ConnectionUtils;
+import org.mifos.connector.mtn.utility.MtnProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mtn Route builder.
+ */
 @Component
 public class MtnRouteBuilder extends RouteBuilder {
 
@@ -75,9 +87,9 @@ public class MtnRouteBuilder extends RouteBuilder {
                 .setHeader("X-Target-Environment", constant(mtnProps.getEnvironment()))
                 .setHeader("Authorization", simple("Bearer ${exchangeProperty." + ACCESS_TOKEN + "}"))
                 .setBody(exchange -> {
-                    PaymentRequestDTO paymentRequestDTO = (PaymentRequestDTO) exchange
+                    PaymentRequestDto paymentRequestDto = (PaymentRequestDto) exchange
                             .getProperty(BUY_GOODS_REQUEST_BODY);
-                    return paymentRequestDTO;
+                    return paymentRequestDto;
                 }).marshal().json(JsonLibrary.Jackson)
                 .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay"
                         + "?bridgeEndpoint=true&throwExceptionOnFailure=false&"
