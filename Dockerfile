@@ -1,13 +1,14 @@
 
-FROM openjdk:17-jdk-slim AS build
-
-
-COPY  . ph-ee-connector-mtn
+FROM eclipse-temurin:17 AS build
 
 WORKDIR /ph-ee-connector-mtn
-RUN ./gradlew clean build
 
-FROM openjdk:17-jdk-slim
+COPY  . .
+
+
+RUN ./gradlew bootJar
+
+FROM eclipse-temurin:17
 
 EXPOSE 5000
 

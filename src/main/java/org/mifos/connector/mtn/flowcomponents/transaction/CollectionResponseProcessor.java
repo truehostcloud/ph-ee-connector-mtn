@@ -1,10 +1,10 @@
 package org.mifos.connector.mtn.flowcomponents.transaction;
 
-import static org.mifos.connector.mtn.Utility.ZeebeUtils.getNextTimer;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_RETRY_EXCEEDED;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_TRANSACTION_PENDING;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.LAST_RESPONSE_BODY;
+import static org.mifos.connector.mtn.utility.ZeebeUtils.getNextTimer;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.EXTERNAL_ID;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.FINANCIAL_TRANSACTION_ID;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.GET_TRANSACTION_STATUS_RESPONSE;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Process the collection response
+ * Process the collection response.
  */
 @Component
 public class CollectionResponseProcessor implements Processor {

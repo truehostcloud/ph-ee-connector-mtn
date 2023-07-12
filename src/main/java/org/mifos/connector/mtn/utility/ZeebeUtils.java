@@ -1,14 +1,9 @@
-package org.mifos.connector.mtn.Utility;
+package org.mifos.connector.mtn.utility;
 
-import org.apache.camel.util.json.JsonObject;
-
+/**
+ * Class that holds utilities to deal with Zeebe.
+ */
 public class ZeebeUtils {
-
-    public static JsonObject getTransferResponseCreateJson() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.put("completedTimestamp", "" + System.currentTimeMillis());
-        return jsonObject;
-    }
 
     /**
      * takes initial timer in the ISO 8601 durations format for more info check

@@ -1,6 +1,8 @@
 package org.mifos.connector.mtn.flowcomponents.transaction;
 
-import static org.mifos.connector.mtn.camel.config.CamelProperties.*;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.BUY_GOODS_REQUEST_BODY;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.DEPLOYED_PROCESS;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.MTN_API_RESPONSE;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_FAILED;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.TRANSACTION_ID;
@@ -15,12 +17,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultExchange;
 import org.mifos.connector.common.channel.dto.TransactionChannelC2BRequestDTO;
-import org.mifos.connector.mtn.Utility.MtnUtils;
-import org.mifos.connector.mtn.dto.PaymentRequestDTO;
+import org.mifos.connector.mtn.dto.PaymentRequestDto;
+import org.mifos.connector.mtn.utility.MtnUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Handles workers for Mtn.
+ */
 @Component
 public class MtnWorker {
 
@@ -41,6 +46,9 @@ public class MtnWorker {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    /**
+     * Setups the workers.
+     */
     @PostConstruct
     public void setupWorkers() {
 
@@ -51,9 +59,9 @@ public class MtnWorker {
             String transactionId = (String) variables.get(TRANSACTION_ID);
             TransactionChannelC2BRequestDTO channelRequest = objectMapper
                     .readValue((String) variables.get("mpesaChannelRequest"), TransactionChannelC2BRequestDTO.class);
-            PaymentRequestDTO paymentRequestDTO = mtnUtils.channelRequestConvertor(channelRequest, transactionId);
+            PaymentRequestDto paymentRequestDto = mtnUtils.channelRequestConvertor(channelRequest, transactionId);
             Exchange exchange = new DefaultExchange(camelContext);
-            exchange.setProperty(BUY_GOODS_REQUEST_BODY, paymentRequestDTO);
+            exchange.setProperty(BUY_GOODS_REQUEST_BODY, paymentRequestDto);
             exchange.setProperty(CORRELATION_ID, UUID.randomUUID());
             exchange.setProperty(DEPLOYED_PROCESS, job.getBpmnProcessId());
             variables.put(CORRELATION_ID, exchange.getProperty(CORRELATION_ID));

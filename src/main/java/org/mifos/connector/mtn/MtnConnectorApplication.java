@@ -9,9 +9,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * Application that has job worker implementations responsible for polling available jobs in Zeebe and communicate with
+ * MTN Rwanda.
+ */
 @SpringBootApplication
 public class MtnConnectorApplication {
 
+    /**
+     * Mapping configurations.
+     *
+     * @return ObjectMapper
+     */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();

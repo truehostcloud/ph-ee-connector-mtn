@@ -8,14 +8,17 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.mifos.connector.common.gsma.dto.AccessTokenDTO;
-import org.mifos.connector.mtn.Utility.ConnectionUtils;
-import org.mifos.connector.mtn.Utility.MtnProps;
+import org.mifos.connector.mtn.utility.ConnectionUtils;
+import org.mifos.connector.mtn.utility.MtnProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class for authentications routes.
+ */
 @Component
 public class AuthRoutes extends RouteBuilder {
 

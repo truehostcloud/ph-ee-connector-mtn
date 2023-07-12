@@ -1,7 +1,7 @@
 package org.mifos.connector.mtn.zeebe;
 
 /**
- * Holds variables to be used by Zeebe
+ * Holds variables to be used by Zeebe.
  */
 public class ZeebeVariables {
 
