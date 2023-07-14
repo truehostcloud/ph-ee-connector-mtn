@@ -28,3 +28,7 @@ mtn:
   api:
     timeout: 60000
   max-retry-count: 2
+
+logging:
+  level:
+    ROOT: INFO

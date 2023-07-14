@@ -1,38 +1,102 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.1'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'com.diffplug.spotless' version '6.19.0' apply false
 }
 
 group = 'org.mifos.connector'
 sourceCompatibility = '17'
 
 repositories {
-	mavenCentral()
-	maven {
-		url = uri('https://fynarfin.jfrog.io/artifactory/fyn-libs-snapshot/')
- }
+    mavenCentral()
+    maven {
+        url = uri('https://fynarfin.jfrog.io/artifactory/fyn-libs-snapshot/')
+    }
 }
 
 dependencies {
-	implementation 'org.apache.camel.springboot:camel-spring-boot-starter:3.12.0'
-	implementation('org.springframework.boot:spring-boot-starter-web:3.0.4')
-	implementation('org.springframework.boot:spring-boot-starter-actuator:3.0.4')
-	implementation 'org.apache.camel:camel-endpointdsl:3.12.0'
-	implementation 'org.apache.camel:camel-jetty:3.12.0'
-	implementation 'org.apache.camel:camel-undertow:3.12.0'
-	implementation 'org.apache.camel:camel-http:3.12.0'
-	implementation 'io.camunda:zeebe-client-java:8.1.9'
-	implementation 'org.json:json:20230227'
-	implementation 'org.mifos:ph-ee-connector-common:1.1.0-SNAPSHOT'
-	implementation 'org.apache.camel.springboot:camel-jackson-starter:3.12.0'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'io.netty:netty-bom:4.1.90.Final'
-	compileOnly 'org.projectlombok:lombok:1.18.26'
-	annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    implementation 'org.apache.camel.springboot:camel-spring-boot-starter:3.12.0'
+    implementation('org.springframework.boot:spring-boot-starter-web:3.0.4')
+    implementation('org.springframework.boot:spring-boot-starter-actuator:3.0.4')
+    implementation 'org.apache.camel:camel-endpointdsl:3.12.0'
+    implementation 'org.apache.camel:camel-jetty:3.12.0'
+    implementation 'org.apache.camel:camel-undertow:3.12.0'
+    implementation 'org.apache.camel:camel-http:3.12.0'
+    implementation 'io.camunda:zeebe-client-java:8.1.9'
+    implementation 'org.json:json:20230227'
+    implementation 'org.mifos:ph-ee-connector-common:1.1.0-SNAPSHOT'
+    implementation 'org.apache.camel.springboot:camel-jackson-starter:3.12.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'io.netty:netty-bom:4.1.90.Final'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
+allprojects {
+    apply plugin: 'com.diffplug.spotless'
 
+    // Configuration for the spotless plugin
+    // https://github.com/diffplug/spotless/tree/main/plugin-gradle
+    spotless {
+        format 'misc', {
+            target '**/*.md', '**/*.properties', '**/.gitignore', '**/.openapi-generator-ignore', '**/*.yml', '**/*.xml', '**/**.json', '**/*.sql'
+            targetExclude '**/build/**', '**/bin/**', '**/.settings/**', '**/.idea/**', '**/.gradle/**', '**/gradlew.bat'
+            indentWithSpaces(4)
+            endWithNewline()
+            trimTrailingWhitespace()
+        }
+
+        groovyGradle {
+            target '*.gradle', '**/*.gradle'
+            targetExclude '**/build/**'
+            greclipse()
+            indentWithSpaces(4)
+            endWithNewline()
+            trimTrailingWhitespace()
+        }
+        java {
+            targetExclude '**/build/**', '**/bin/**', '**/out/**', '**/megalinter-reports/**'
+            importOrder() //sort imports alphabetically
+            removeUnusedImports()
+            eclipse().configFile "$rootDir/config/dev-formatter.xml"
+            endWithNewline()
+            trimTrailingWhitespace()
+
+            // Enforce style modifier order
+            custom 'Modifier ordering', {
+                def modifierRanking = [
+                    public      : 1,
+                    protected   : 2,
+                    private     : 3,
+                    abstract    : 4,
+                    default     : 5,
+                    static      : 6,
+                    final       : 7,
+                    transient   : 8,
+                    volatile    : 9,
+                    synchronized: 10,
+                    native      : 11,
+                    strictfp    : 12]
+                // Find any instance of multiple modifiers. Lead with a non-word character to avoid
+                // accidental matching against for instance, "an alternative default value"
+                it.replaceAll(/\W(?:public |protected |private |abstract |default |static |final |transient |volatile |synchronized |native |strictfp ){2,}/, {
+                    // Do not replace the leading non-word character.  Identify the modifiers
+                    it.replaceAll(/(?:public |protected |private |abstract |default |static |final |transient |volatile |synchronized |native |strictfp ){2,}/, {
+                        // Sort the modifiers according to the ranking above
+                        it.split().sort({ modifierRanking[it] }).join(' ') + ' '
+                    }
+                    )
+                }
+                )
+            }
+        }
+
+        lineEndings 'UNIX'
+    }
+
+    compileJava.dependsOn spotlessCheck
+}
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

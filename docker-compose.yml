@@ -42,29 +42,25 @@
       zeebe:
         condition: service_healthy
 
-  roster-connector:
-    image: oaftech.azurecr.io/phee-ns/ph-ee-connector-ams-pesa:v1.2.1
+***REMOVED***
+    build:
+      context: .
+      dockerfile: Dockerfile
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
-      AMS_LOCAL_TIMEOUT: 60000
-      PESACORE_BASE-URL: https://qaoperations01.oneacrefund.org
-      PESACORE_AUTH-HEADER: PaymentHubTest
-      PESACORE_ENDPOINT_VERIFICATION: /api/paymentHub/Verification
-      PESACORE_ENDPOINT_CONFIRMATION: /api/paymentHub/Confirmation
-***REMOVED***
-***REMOVED***
-***REMOVED***
-
     depends_on:
       zeebe:
         condition: service_healthy
 
 ***REMOVED***
-    build:
-      context: .
-      dockerfile: Dockerfile
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+      FINERACT_BASE-URL: https://loans.qa.oneacrefund.org/fineract-provider/api/v1
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***

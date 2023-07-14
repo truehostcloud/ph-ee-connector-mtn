@@ -3,8 +3,12 @@ package org.mifos.connector.mtn.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+/**
+ * CallBack model.
+ */
 @Data
 public class MtnCallback {
+
     @JsonProperty("financialTransactionId")
     private String financialTransactionId;
     @JsonProperty("externalId")
