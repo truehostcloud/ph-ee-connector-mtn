@@ -1,5 +1,8 @@
 package org.mifos.connector.mtn.camel.config;
 
+/**
+ * Camel properties.
+ */
 public class CamelProperties {
 
     public CamelProperties() {}

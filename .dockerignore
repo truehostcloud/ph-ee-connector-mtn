@@ -1,0 +1,4 @@
+megalinter-reports/
+**/*.class
+.git
+.cache

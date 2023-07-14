@@ -42,25 +42,6 @@ services:
       zeebe:
         condition: service_healthy
 
-  roster-connector:
-    image: oaftech.azurecr.io/phee-ns/ph-ee-connector-ams-pesa:v1.2.1
-    ports:
-      - "5003:5000"
-    environment:
-      AMS_LOCAL_ENABLED: false
-      AMS_LOCAL_TIMEOUT: 60000
-      PESACORE_BASE-URL: https://qaoperations01.oneacrefund.org
-      PESACORE_AUTH-HEADER: PaymentHubTest
-      PESACORE_ENDPOINT_VERIFICATION: /api/paymentHub/Verification
-      PESACORE_ENDPOINT_CONFIRMATION: /api/paymentHub/Confirmation
-      ZEEBE_BROKER_CONTACTPOINT: zeebe:26500
-      LOGGING_LEVEL_ROOT: INFO
-      LOGGING_PATTERN_CONSOLE: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
-
-    depends_on:
-      zeebe:
-        condition: service_healthy
-
   mtn-rw-connector:
     build:
       context: .
@@ -69,6 +50,21 @@ services:
       - "5004:5000"
     environment:
       ZEEBE_BROKER_CONTACTPOINT: zeebe:26500
+    depends_on:
+      zeebe:
+        condition: service_healthy
+
+  fineract-connector:
+    image: oaftech.azurecr.io/oneacrefund/ph-ee-connector-ams-fineract:0.0.1-SNAPSHOT.2023.04.26.1
+    ports:
+      - "5003:5000"
+    environment:
+      AMS_LOCAL_ENABLED: true
+      FINERACT_BASE-URL: https://loans.qa.oneacrefund.org/fineract-provider/api/v1
+      LOGGING_LEVEL_ROOT: INFO
+      SPRING_PROFILES_ACTIVE:
+      ZEEBE_BROKER_CONTACTPOINT: zeebe:26500
+      LOGGING_PATTERN_CONSOLE: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
     depends_on:
       zeebe:
         condition: service_healthy
