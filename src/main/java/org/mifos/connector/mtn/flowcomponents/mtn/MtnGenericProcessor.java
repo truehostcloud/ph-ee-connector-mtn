@@ -1,11 +1,14 @@
 package org.mifos.connector.mtn.flowcomponents.mtn;
 
+import static org.mifos.connector.mtn.camel.config.CamelProperties.MTN_API_RESPONSE;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import static org.mifos.connector.mtn.camel.config.CamelProperties.MTN_API_RESPONSE;
-
+/**
+ * Mtn generic processor.
+ */
 @Component
 public class MtnGenericProcessor implements Processor {
 
