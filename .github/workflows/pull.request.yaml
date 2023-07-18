@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: pull-request
         run: |
-          gh pr create -B develop -H main -t "Main backMerge" -b "sync main with develop" --reviewer one-acre-fund/services-development
+          gh pr create -B develop -H main -t "Main backMerge" -b "sync main with develop" --reviewer gilclefes,shejasabin,victorjbassey
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
