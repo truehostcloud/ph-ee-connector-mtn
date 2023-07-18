@@ -1,14 +1,14 @@
 
-FROM openjdk:11 AS build
-
-
-RUN apt-get update -qq && apt-get install -y wget
-COPY  . ph-ee-connector-mtn
+FROM eclipse-temurin:17 AS build
 
 WORKDIR /ph-ee-connector-mtn
-RUN ./gradlew clean build
 
-FROM openjdk:11
+COPY  . .
+
+
+RUN ./gradlew bootJar
+
+FROM eclipse-temurin:17
 
 EXPOSE 5000
 
