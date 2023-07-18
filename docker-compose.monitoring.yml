@@ -1,0 +1,102 @@
+***REMOVED***
+
+***REMOVED***
+  zeebe_network:
+    driver: bridge
+***REMOVED***
+  zeebe:
+    container_name: zeebe_broker
+    image: ghcr.io/camunda-community-hub/zeebe-with-hazelcast-exporter:8.0.5
+***REMOVED***
+      - ZEEBE_LOG_LEVEL=debug
+***REMOVED***
+      - "26500:26500"
+      - "9600:9600"
+      - "5701:5701"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9600/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+    ***REMOVED***
+      - zeebe_network
+
+  simple-monitor-in-memory:
+    container_name: zeebe-simple-monitor-in-memory
+    image: ghcr.io/camunda-community-hub/zeebe-simple-monitor:2.4.1
+***REMOVED***
+      - zeebe.client.broker.gateway-address=zeebe:26500
+      - zeebe.client.worker.hazelcast.connection=zeebe:5701
+***REMOVED***
+      - "8082:8082"
+    depends_on:
+      zeebe:
+        condition: service_healthy
+    ***REMOVED***
+      - zeebe_network
+    profiles:
+      - in-memory
+
+***REMOVED***
+    image: oaftech.azurecr.io/phee-ns/ph-ee-connector-channel:v1.4.2
+***REMOVED***
+      - "5002:8080"
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+    ***REMOVED***
+      - zeebe_network
+
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+      FINERACT_BASE-URL: https://loans.qa.oneacrefund.org/fineract-provider/api/v1
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+    ***REMOVED***
+      - zeebe_network
+
+***REMOVED***
+    build:
+      context: .
+      dockerfile: Dockerfile
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+    ***REMOVED***
+      - zeebe_network
+  zeebe_ops:
+    image: oaftech.azurecr.io/phee-ns/phee-zeebe-ops:v1.0.1
+***REMOVED***
+      - "5001:5000"
+***REMOVED***
+***REMOVED***
+***REMOVED***
+    depends_on:
+      zeebe:
+        condition: service_healthy
+    ***REMOVED***
+      - zeebe_network

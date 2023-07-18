@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Zeebe configurations.
+ */
 @Configuration
 public class ZeebeClientConfiguration {
 
@@ -14,14 +17,9 @@ public class ZeebeClientConfiguration {
     @Value("${zeebe.client.max-execution-threads}")
     private int zeebeClientMaxThreads;
 
-
     @Bean
     public ZeebeClient setup() {
-        return ZeebeClient.newClientBuilder()
-                .gatewayAddress(zeebeBrokerContactpoint)
-                .usePlaintext()
-                .numJobWorkerExecutionThreads(zeebeClientMaxThreads)
-                .build();
+        return ZeebeClient.newClientBuilder().gatewayAddress(zeebeBrokerContactpoint).usePlaintext()
+                .numJobWorkerExecutionThreads(zeebeClientMaxThreads).build();
     }
 }
-
