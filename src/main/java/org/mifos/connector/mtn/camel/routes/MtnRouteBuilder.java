@@ -3,6 +3,8 @@ package org.mifos.connector.mtn.camel.routes;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.ACCESS_TOKEN;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.BUY_GOODS_REQUEST_BODY;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_DESCRIPTION;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_INFORMATION;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_RETRY_EXCEEDED;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_TRANSACTION_PENDING;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.LAST_RESPONSE_BODY;
@@ -175,11 +177,18 @@ public class MtnRouteBuilder extends RouteBuilder {
                     String body = exchange.getIn().getBody(String.class);
                     JSONObject jsonObject = new JSONObject(body);
                     exchange.setProperty(LAST_RESPONSE_BODY, body);
-                    exchange.setProperty(FINANCIAL_TRANSACTION_ID, jsonObject.getString(FINANCIAL_TRANSACTION_ID));
-                    if (jsonObject.getString("status").equals("SUCCESSFUL")) {
+                    exchange.setProperty(FINANCIAL_TRANSACTION_ID,
+                            jsonObject.has(FINANCIAL_TRANSACTION_ID) ? jsonObject.getString(FINANCIAL_TRANSACTION_ID)
+                                    : null);
+                    if (jsonObject.has("status") && (jsonObject.getString("status").equals("SUCCESSFUL"))) {
                         exchange.setProperty(TRANSACTION_FAILED, false);
-                    } else {
+                    } else if (jsonObject.has("status") && jsonObject.getString("status").equals("PENDING")) {
                         exchange.setProperty(IS_TRANSACTION_PENDING, true);
+                    } else {
+                        exchange.setProperty(ERROR_DESCRIPTION,
+                                jsonObject.has("reason") ? jsonObject.getString("reason") : null);
+                        exchange.setProperty(ERROR_INFORMATION, exchange.getIn().getBody(String.class));
+                        exchange.setProperty(TRANSACTION_FAILED, true);
                     }
                 }).process(collectionResponseProcessor).otherwise()
                 .log(LoggingLevel.ERROR, "Transaction status request unsuccessful").process(exchange -> {
