@@ -38,6 +38,8 @@
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
+***REMOVED***
+***REMOVED***
     depends_on:
       zeebe:
         condition: service_healthy

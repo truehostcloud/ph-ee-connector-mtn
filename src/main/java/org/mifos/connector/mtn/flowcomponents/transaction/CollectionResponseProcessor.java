@@ -1,6 +1,9 @@
 package org.mifos.connector.mtn.flowcomponents.transaction;
 
 import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_CODE;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_DESCRIPTION;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_INFORMATION;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_RETRY_EXCEEDED;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_TRANSACTION_PENDING;
 import static org.mifos.connector.mtn.camel.config.CamelProperties.LAST_RESPONSE_BODY;
@@ -99,7 +102,11 @@ public class CollectionResponseProcessor implements Processor {
         variables.put(TRANSACTION_FAILED, exchange.getProperty(TRANSACTION_FAILED, Boolean.class));
         logger.info("Received financial transaction ID  " + variables.get(FINANCIAL_TRANSACTION_ID));
 
-        // TODO:Handle failed transactions with error code
+        if (exchange.getProperty(TRANSACTION_FAILED, Boolean.class)) {
+            variables.put(ERROR_INFORMATION, exchange.getProperty(ERROR_INFORMATION, String.class));
+            variables.put(ERROR_CODE, exchange.getProperty(ERROR_INFORMATION, String.class));
+            variables.put(ERROR_DESCRIPTION, exchange.getProperty(ERROR_DESCRIPTION, String.class));
+        }
 
         logger.info("Publishing transaction message variables: " + variables);
         zeebeClient.newPublishMessageCommand().messageName(TRANSFER_MESSAGE).correlationKey(correlationId)
