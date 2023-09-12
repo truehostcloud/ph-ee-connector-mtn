@@ -14,7 +14,7 @@ for more information about Zeebe projects and Payment Hub in general.
 
 ## Tech Stack
 
-- Java 11
+- Java 17
 - Spring Boot
 - Apache Camel
 - Zeebe Java Client
@@ -40,7 +40,7 @@ the `docker-compose.yml` file. The following components are included:
 - Zeebe-ops: Provides APIs for carrying out certain operations on zeebe such as uploading a bpmn
   file
 - Channel-connector: Provides APIs for initiating collection requests
-- Roster-connector: Acts as Account management system(CLIF) - any other ams connector can be used
+- Fineract-connector: Acts as Account management system(CLIF) - any other ams connector can be used
 
 A lot more services can be added to the above based on your needs, but to run the mtn-rw
 connector locally,
@@ -81,7 +81,7 @@ successfully run the project:
 
 To initiate a request, follow the steps below:
 
-  - Upload the MTN-RW bpmn (found in `src/main/resources/momo_flow_roster-rwoaf.bpmn`) through **zeebe-ops**
+  - Upload the MTN-RW bpmn (found in `src/main/resources/momo_flow_mtnfineract-oaf.bpmn`) through **zeebe-ops**
     by sending a POST request to `http://localhost:5001/zeebe/upload` with the file attached.
 
   - Send a collection request through the **channel-connector** by sending a POST request
@@ -92,10 +92,10 @@ To initiate a request, follow the steps below:
       "payer": [
           {
               "key": "MSISDN",
-              "value" :"467331234501"
+              "value" :"250788111111"
           },
           {
-              "key":"ACCOUNTID",
+              "key":"FINERACTACCOUNTID",
               "value":"24450520"
           }
       ],
@@ -128,7 +128,7 @@ To initiate a request, follow the steps below:
       ```
 
     - Check the logs in the **mtn-rw-connector** connector to see if the confirmation is processed
-    - Check the logs in the **roster-connector** ams connector to see if the settlement is processed in the ams
+    - Check the logs in the **fineract-connector** ams connector to see if the settlement is processed in the ams
 
 ## Troubleshooting
 
