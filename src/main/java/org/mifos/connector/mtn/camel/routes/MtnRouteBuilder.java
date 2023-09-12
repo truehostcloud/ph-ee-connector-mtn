@@ -1,6 +1,13 @@
 package org.mifos.connector.mtn.camel.routes;
 
-import static org.mifos.connector.mtn.camel.config.CamelProperties.*;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ACCESS_TOKEN;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.BUY_GOODS_REQUEST_BODY;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.CORRELATION_ID;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_DESCRIPTION;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.ERROR_INFORMATION;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_RETRY_EXCEEDED;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.IS_TRANSACTION_PENDING;
+import static org.mifos.connector.mtn.camel.config.CamelProperties.LAST_RESPONSE_BODY;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.CALLBACK;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.CALLBACK_RECEIVED;
 import static org.mifos.connector.mtn.zeebe.ZeebeVariables.FINANCIAL_TRANSACTION_ID;
