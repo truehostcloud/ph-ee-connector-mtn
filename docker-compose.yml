@@ -31,6 +31,8 @@ services:
     ports:
       - "5002:5000"
     environment:
+      AMS_GROUPS_0__IDENTIFIER: FINERACTACCOUNTID
+      AMS_GROUPS_0__VALUE: mtnfineract
       DFSPIDS: oaf,oafrw,rw-oaf
       LOGGING_LEVEL_ROOT: INFO
       LOGGING_PATTERN_CONSOLE: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
@@ -59,7 +61,7 @@ services:
     ports:
       - "5003:5000"
     environment:
-      AMS_LOCAL_ENABLED: true
+      AMS_LOCAL_ENABLED: false
       FINERACT_BASE-URL: https://loans.qa.oneacrefund.org/fineract-provider/api/v1
       LOGGING_LEVEL_ROOT: INFO
       SPRING_PROFILES_ACTIVE:

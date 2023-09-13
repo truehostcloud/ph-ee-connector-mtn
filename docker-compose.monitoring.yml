@@ -63,7 +63,7 @@ services:
     ports:
       - "5003:5000"
     environment:
-      AMS_LOCAL_ENABLED: true
+      AMS_LOCAL_ENABLED: false
       FINERACT_BASE-URL: https://loans.qa.oneacrefund.org/fineract-provider/api/v1
       LOGGING_LEVEL_ROOT: INFO
       SPRING_PROFILES_ACTIVE:
