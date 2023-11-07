@@ -111,7 +111,7 @@ public class MtnRouteBuilder extends RouteBuilder {
         /*
          * Use this endpoint for receiving the callback from MTN endpoint
          */
-        from("rest:POST:/buygoods/callback").id("mtn-buy-goods-callback")
+        from("rest:PUT:/buygoods/callback").id("mtn-buy-goods-callback")
                 .log(LoggingLevel.INFO, "Callback body \n\n..\n\n..\n\n.. ${body}").to("direct:mtn-callback-handler");
 
         from("direct:mtn-callback-handler").id("mtn-callback-handler").log(LoggingLevel.INFO, "Handling callback body")
