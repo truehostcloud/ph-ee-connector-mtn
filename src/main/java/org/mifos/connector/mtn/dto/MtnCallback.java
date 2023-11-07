@@ -27,4 +27,6 @@ public class MtnCallback {
     private String partyId;
     @JsonProperty("status")
     private String status;
+    @JsonProperty("payerMessage")
+    private String accountNumber;
 }
