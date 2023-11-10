@@ -91,6 +91,7 @@ public class MtnRouteBuilder extends RouteBuilder {
                 .setBody(exchange -> {
                     PaymentRequestDto paymentRequestDto = (PaymentRequestDto) exchange
                             .getProperty(BUY_GOODS_REQUEST_BODY);
+                    logger.info("\n\n Request body: " + paymentRequestDto + "\n");
                     return paymentRequestDto;
                 }).marshal().json(JsonLibrary.Jackson)
                 .toD(mtnProps.getApiHost() + "/collection/v1_0/requesttopay"
