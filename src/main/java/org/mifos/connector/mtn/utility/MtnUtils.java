@@ -23,12 +23,15 @@ public class MtnUtils {
      */
     public PaymentRequestDto channelRequestConvertor(TransactionChannelC2BRequestDTO transactionChannelRequestDto,
             String transactionId) {
+        String phoneNumber = transactionChannelRequestDto.getPayer()[0].getValue();
+        if (phoneNumber.startsWith("+")) {
+            phoneNumber = phoneNumber.substring(1);
+        }
         PaymentRequestDto paymentRequestDto = new PaymentRequestDto();
         paymentRequestDto.setAmount(transactionChannelRequestDto.getAmount().getAmount().trim());
         paymentRequestDto.setCurrency(transactionChannelRequestDto.getAmount().getCurrency());
         paymentRequestDto.setExternalId(transactionId);
-        paymentRequestDto.setPayer(new Payer(transactionChannelRequestDto.getPayer()[0].getKey(),
-                transactionChannelRequestDto.getPayer()[0].getValue()));
+        paymentRequestDto.setPayer(new Payer(transactionChannelRequestDto.getPayer()[0].getKey(), phoneNumber));
         paymentRequestDto.setPayerMessage(transactionChannelRequestDto.getPayer()[1].getValue());
         return paymentRequestDto;
     }
