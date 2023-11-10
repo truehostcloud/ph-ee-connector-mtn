@@ -24,4 +24,9 @@ public class Payer {
         this.partyIdType = partyIdType;
         this.partyId = partyId;
     }
+
+    @Override
+    public String toString() {
+        return "Payer{" + "partyIdType='" + partyIdType + '\'' + ", partyId='" + partyId + '\'' + '}';
+    }
 }
