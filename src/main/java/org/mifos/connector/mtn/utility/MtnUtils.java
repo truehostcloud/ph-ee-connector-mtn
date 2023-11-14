@@ -33,6 +33,7 @@ public class MtnUtils {
         paymentRequestDto.setExternalId(transactionId);
         paymentRequestDto.setPayer(new Payer(transactionChannelRequestDto.getPayer()[0].getKey(), phoneNumber));
         paymentRequestDto.setPayerMessage(transactionChannelRequestDto.getPayer()[1].getValue());
+        paymentRequestDto.setPayeeNote(transactionChannelRequestDto.getPayer()[1].getValue());
         return paymentRequestDto;
     }
 }
