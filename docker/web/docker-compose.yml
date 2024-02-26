@@ -1,0 +1,34 @@
+version: '3'
+
+volumes:
+  my-db-volume:
+
+***REMOVED***
+  web_network:
+
+***REMOVED***
+  dbsql:
+    image: mysql:5.7
+    hostname: dbsql
+    container_name: dbsql
+    restart: always
+***REMOVED***
+      MYSQL_DATABASE: 'operator'
+      MYSQL_USER: 'mifos'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'a'
+***REMOVED***
+      - '3306:3306'
+    volumes:
+      - my-db-volume:/var/lib/mysql
+  importer_rdbms:
+    image: oaftech.azurecr.io/phee-ns/ph-ee-importer-rdbms:v1.3.1
+***REMOVED***
+      - '5009:5000'
+***REMOVED***
+***REMOVED***
+      KAFKA_BROKERS: "http://localhost:9094"
+      DATASOURCE_CORE_HOST: "localhost"
+    depends_on:
+      - dbsql
+    network_mode: "host"

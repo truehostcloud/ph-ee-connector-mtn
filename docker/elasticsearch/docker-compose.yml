@@ -1,0 +1,44 @@
+version: "3.9"
+
+***REMOVED***
+  network2:
+***REMOVED***
+***REMOVED***
+
+volumes:
+  zeebe_elasticsearch_data:
+
+***REMOVED***
+  elasticsearch:
+    container_name: elkelasticsearchs
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+***REMOVED***
+      - "9200:9200"
+***REMOVED***
+      - discovery.type=single-node
+      - cluster.name=elasticsearch
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - zeebe_elasticsearch_data:/usr/share/elasticsearch/data
+    ***REMOVED***
+      - network2
+  kibana:
+    container_name: elkkibana
+    image: docker.elastic.co/kibana/kibana:7.16.3
+***REMOVED***
+      - "5601:5601"
+    ***REMOVED***
+      - network2
+  importer_es:
+    image: oaftech.azurecr.io/phee-ns/ph-ee-importer-es:v1.4.0
+***REMOVED***
+      - "5009:5000"
+***REMOVED***
+***REMOVED***
+      KAFKA_BROKERS: "http://localhost:9094"
+      IMPORTER_MASKING_ENABLE: false
+      IMPORTER_ELASTICSEARCH_URL: "http://localhost:9200"
+      ELASTICSEARCH_USERNAME: "elastic"
+      ELASTICSEARCH_PASSWORD: "somepassword"
+      ELASTICSEARCH_SECURITY_ENABLED: false
+    network_mode: "host"
